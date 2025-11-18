@@ -5,8 +5,8 @@
 %%
 % We will reuse codes that have already been written.
 % Path to folder containing signal and noise generation codes.
-addpath ../SIGNALS
-addpath ../NOISE
+addpath SIGNALS
+addpath NOISE
 
 
 %% Parameters for data realization
@@ -79,6 +79,10 @@ llr = innerprodpsd(dataVec,templateVec,sampFreq,psdPosFreq);
 %GLRT is its square
 llr = llr^2;
 disp(llr);
+
+%Testing my GLRT function
+llr2=glrtqcsig(dataVec,timeVec,psdPosFreq,[a1,a2,a3]);
+disp(llr2); %llr2 and llr are giving the same value, so my function works. 
 
 %% Estimate the distribution of GLRT under the null and alternative hypotheses
 % Number of data realizations to generate under each hypothesis
