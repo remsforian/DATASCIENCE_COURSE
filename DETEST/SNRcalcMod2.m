@@ -6,8 +6,8 @@
 
 %%
 % Path to folder containing signal and noise generation codes
-addpath ../SIGNALS
-addpath ../NOISE
+addpath ./SIGNALS
+addpath ./NOISE
 
 %%
 % This is the target SNR for the LR
@@ -29,12 +29,12 @@ a3=3;
 A = 1; 
 sigVec = crcbgenqcsig(timeVec,1,[a1,a2,a3]);
 
-%%
-% We will use the noise PSD used in colGaussNoiseDemo.m but add a constant
-% to remove the parts that are zero. (Exercise: Prove that if the noise PSD
-% is zero at some frequencies but the signal added to the noise is not,
-% then one can create a detection statistic with infinite SNR.)
-noisePSD = @(f) (f>=100 & f<=300).*(f-100).*(300-f)/10000 + 1;
+% we want the noise psd to be tha tfrom iligo, so we will load in the file
+% and get the psd
+
+iligo = load("NOISE/iLIGOSensitivity.txt", "-ascii");
+noisePSD = @(f) interp1(iligo(:, 1), iligo(:,2), f, 'linear', 0);
+
 
 %%
 % Generate the PSD vector to be used in the normalization. Should be
@@ -44,7 +44,7 @@ kNyq = floor(nSamples/2)+1;
 posFreq = (0:(kNyq-1))*(1/dataLen);
 psdPosFreq = noisePSD(posFreq);
 figure;
-plot(posFreq,psdPosFreq);
+loglog(posFreq,psdPosFreq);
 axis([0,posFreq(end),0,max(psdPosFreq)]);
 xlabel('Frequency (Hz)');
 ylabel('PSD ((data unit)^2/Hz)');
