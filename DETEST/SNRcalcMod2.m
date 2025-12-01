@@ -6,8 +6,8 @@
 
 %%
 % Path to folder containing signal and noise generation codes
-addpath ./SIGNALS
-addpath ./NOISE
+addpath ../SIGNALS
+addpath ../NOISE
 
 %%
 % This is the target SNR for the LR

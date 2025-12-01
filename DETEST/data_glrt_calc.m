@@ -1,3 +1,5 @@
+%SDM: Path was missing
+addpath ..\
 % load in all of the data. 
 data1 = load("DETEST/data1.txt","-ascii")';
 data2 = load("DETEST/data2.txt","-ascii")';
@@ -27,3 +29,5 @@ llr3=glrtqcsig(data3,timeVec,psdPosFreq,[a1,a2,a3]);
 disp(llr1);
 disp(llr2);
 disp(llr3);
+
+%FIXME: Estimate the significances using H0 data realizations
