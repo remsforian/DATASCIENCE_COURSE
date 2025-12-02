@@ -29,6 +29,10 @@ a3=3;
 A = 1; 
 sigVec = crcbgenqcsig(timeVec,1,[a1,a2,a3]);
 
+figure;
+plot(timeVec,sigVec);
+xlabel('Time (sec)');
+
 %%
 % We will use the noise PSD used in colGaussNoiseDemo.m but add a constant
 % to remove the parts that are zero. (Exercise: Prove that if the noise PSD

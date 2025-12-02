@@ -6,8 +6,8 @@
 
 %%
 % Path to folder containing signal and noise generation codes
-addpath ../SIGNALS
-addpath ../NOISE
+addpath SIGNALS
+addpath NOISE
 
 %%
 % This is the target SNR for the LR
@@ -29,11 +29,17 @@ a3=3;
 A = 1; 
 sigVec = crcbgenqcsig(timeVec,1,[a1,a2,a3]);
 
+figure;
+plot(timeVec,sigVec);
+xlabel('Time (sec)');
+
 % we want the noise psd to be tha tfrom iligo, so we will load in the file
 % and get the psd
 
 iligo = load("NOISE/iLIGOSensitivity.txt", "-ascii");
-noisePSD = @(f) interp1(iligo(:, 1), iligo(:,2), f, 'linear', 0);
+minFreq = 50;
+maxFreq = 700;
+noisePSD = @(f) interp1(iligo(:, 1), iligo(:,2), min(max(f, minFreq), maxFreq), 'linear');
 
 
 %%
@@ -43,6 +49,7 @@ dataLen = nSamples/sampFreq;
 kNyq = floor(nSamples/2)+1;
 posFreq = (0:(kNyq-1))*(1/dataLen);
 psdPosFreq = noisePSD(posFreq);
+
 figure;
 loglog(posFreq,psdPosFreq);
 axis([0,posFreq(end),0,max(psdPosFreq)]);

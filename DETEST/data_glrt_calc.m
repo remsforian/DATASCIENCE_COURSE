@@ -1,5 +1,7 @@
 %SDM: Path was missing
-addpath ..\
+addpath SIGNALS/
+addpath DETEST/
+addpath NOISE/
 % load in all of the data. 
 data1 = load("DETEST/data1.txt","-ascii")';
 data2 = load("DETEST/data2.txt","-ascii")';
@@ -30,4 +32,21 @@ disp(llr1);
 disp(llr2);
 disp(llr3);
 
-%FIXME: Estimate the significances using H0 data realizations
+% signifigance calculation
+
+% H0 noise realizations
+
+M = 10000; 
+nullglrt = zeros(M,1);
+for i = 1:M
+    NoiseData = statgaussnoisegen(nsamples, psdPosFreq, 1, sfreq);
+    nullglrt(i) = glrtqcsig(NoiseData, timeVec, psdPosFreq, [a1,a2,a3]);
+end
+
+sig1 = sum(nullGLRTs >= llr1) / M;
+sig2 = sum(nullGLRTs >= llr2) / M;
+sig3 = sum(nullGLRTs >= llr3) / M;
+
+disp(sig1);
+disp(sig2);
+disp(sig3);
