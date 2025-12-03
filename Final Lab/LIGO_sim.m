@@ -1,0 +1,64 @@
+function dataVec = LIGO_sim(timeVec,snr,P)
+
+%% How to normalize a signal for a given SNR
+% We will normalize a signal such that the Likelihood ratio (LR) test for it has
+% a given signal-to-noise ratio (SNR) in noise with a given Power Spectral 
+% Density (PSD). [We often shorten this statement to say: "Normalize the
+% signal to have a given SNR." ]
+
+%%
+% Path to folder containing signal and noise generation codes
+addpath ../SIGNALS/
+addpath ../NOISE/
+addpath ../DETEST/
+addpath ../
+
+% Amplitude value does not matter as it will be changed in the normalization
+sigVec = crcbgenqcsig_new(timeVec,1,P);
+
+figure;
+plot(timeVec,sigVec);
+xlabel('Time (sec)');
+
+% we want the noise psd to be tha tfrom iligo, so we will load in the file
+% and get the psd
+
+iligo = load("NOISE/iLIGOSensitivity.txt", "-ascii");
+minFreq = 50;
+maxFreq = 700;
+noisePSD = @(f) interp1(iligo(:, 1), iligo(:,2), min(max(f, minFreq), maxFreq), 'linear');
+
+
+%%
+% Generate the PSD vector to be used in the normalization. Should be
+% generated for all positive DFT frequencies. 
+nSamples = length(timeVec);
+sampFreq = mean(diff(timeVec));
+dataLen = nSamples/sampFreq;
+kNyq = floor(nSamples/2)+1;
+posFreq = (0:(kNyq-1))*(1/dataLen);
+psdPosFreq = noisePSD(posFreq);
+
+%% Calculation of the norm
+% Norm of signal squared is inner product of signal with itself
+normSigSqrd = innerprodpsd(sigVec,sigVec,sampFreq,psdPosFreq);
+% Normalize signal to specified SNR
+sigVec = snr*sigVec/sqrt(normSigSqrd);
+
+%% Test
+%Obtain LLR values for multiple noise realizations
+nH0Data = 1000;
+llrH0 = zeros(1,nH0Data);
+for lp = 1:nH0Data
+    noiseVec = statgaussnoisegen(nSamples,[posFreq(:),psdPosFreq(:)],100,sampFreq);
+    llrH0(lp) = innerprodpsd(noiseVec,sigVec,sampFreq,psdPosFreq);
+end
+%Obtain LLR for multiple data (=signal+noise) realizations
+nH1Data = 1000;
+llrH1 = zeros(1,nH1Data);
+for lp = 1:nH0Data
+    noiseVec = statgaussnoisegen(nSamples,[posFreq(:),psdPosFreq(:)],100,sampFreq);
+    % Add normalized signal
+    dataVec = noiseVec + sigVec;
+    llrH1(lp) = innerprodpsd(dataVec,sigVec,sampFreq,psdPosFreq);
+end

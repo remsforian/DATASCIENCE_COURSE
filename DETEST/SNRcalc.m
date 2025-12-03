@@ -25,7 +25,7 @@ timeVec = (0:(nSamples-1))/sampFreq;
 a1=10;
 a2=3;
 a3=3;
-% Amplitude value does not matter as it will be changed in the normalization
+% Amplitude value doe s not matter as it will be changed in the normalization
 A = 1; 
 sigVec = crcbgenqcsig(timeVec,1,[a1,a2,a3]);
 
