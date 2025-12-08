@@ -1,6 +1,7 @@
 addpath NOISE/
 addpath SIGNALS/
 addpath DETEST/
+addpath 'Final Lab'/CODES/
 
 %% Generate Data Realization
 % True parameters for the quadratic chirp signal
